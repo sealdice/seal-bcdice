@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         BCDice
 // @author       木落
-// @version      1.0.0
+// @version      1.1.0
 // @description  在海豹中使用bcdice，请使用.bcd help查看指令说明。此插件占据大量内存(~200MB)，请小心使用。
-// @timestamp    1672478752
-// 2022-12-31
+// @timestamp    1674477074
+// 2023/1/23
 // @license      BSD 3-Clause
 // @homepageURL  https://github.com/sealdice/seal-bcdice
 // ==/UserScript==

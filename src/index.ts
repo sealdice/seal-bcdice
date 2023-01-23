@@ -4,19 +4,20 @@ import 'bcdice/lib/bcdice/game_system';
 // import 'bcdice/lib/bcdice/game_system/SwordWorld2_0';
 // import 'bcdice/lib/bcdice/game_system/SwordWorld2_5';
 import StaticLoader from './bcd-loader'
+import { bracketParse } from './bracket-parser';
 
 console.log('BCDice Version:', Version);
 
 
 let ext = seal.ext.find('bcdice');
 if (!ext) {
-  ext = seal.ext.new('bcdice', '木落', '1.0.0');
+  ext = seal.ext.new('bcdice', '木落', '1.1.0');
   seal.ext.register(ext);
 }
 
 const cmdBCD = seal.ext.newCmdItemInfo();
 cmdBCD.name = 'bcd';
-cmdBCD.help = 'bcdice 骰点，指令格式:\n.bcd version // 查看版本\n.bcd load Cthulhu7th // 加载一个系统\n.bcd 1d4 // 进行操作\n.bcd find <规则名> // 查找系统，输入游戏名的一部分，仅英文区分大小写';
+cmdBCD.help = 'bcdice 骰点，指令格式:\n.bcd version // 查看版本\n.bcd load <系统名> // 加载一个系统\n.bcd 1d4 // 进行操作\n.bcd find <规则名> // 查找系统，输入游戏名的一部分，仅英文区分大小写';
 
 let curSys = undefined;
 
@@ -65,14 +66,33 @@ cmdBCD.solve = (ctx, msg, cmdArgs) => {
 
     default: {
       if (curSys) {
-        const ret = curSys.eval(val || '');
+        let lastText = '';
+        val = cmdArgs.cleanArgs;
+        if (val) {
+          try {
+            const pairs = bracketParse(val);
+            let leftIndex = val.length;
+            for (let i = pairs.length - 1; i >= 0; i--) {
+              const p = pairs[i];
+              const fstr = seal.format(ctx, val.slice(p[0], p[1]+1));
+              lastText = fstr + val.slice(p[1]+1, leftIndex) + lastText;
+              leftIndex = p[0];
+            }
+            lastText = val.slice(0, leftIndex) + lastText;
+            console.log('>DiceText: ' + lastText);
+          } catch (e) {
+            seal.replyToSender(ctx, msg, '执行失败，可能是对 {} 的使用不规范: ' + e.toString());
+            return seal.ext.newCmdExecuteResult(true);
+          }
+        }
+        const ret = curSys.eval(lastText || '');
         if (ret) {
           seal.replyToSender(ctx, msg, ret.text);
         } else {
           seal.replyToSender(ctx, msg, '执行失败，未得到任何返回');
         }
       } else {;
-        seal.replyToSender(ctx, msg, '还未加载系统，请先执行 .bcd load Cthulhu7th // 或其他模块')
+        seal.replyToSender(ctx, msg, '还未加载系统，请先执行 .bcd load SwordWorld2.5 // 加载剑世界2.5，或其他200余个规则系统(可用.bcd find搜索)')
       }
     }
   }
@@ -84,5 +104,3 @@ const systemList = loader.listAvailableGameSystems().map(info => info.id);
 // loader.dynamicLoad('Cthulhu7th')
 
 ext.cmdMap['bcd'] = cmdBCD;
-
-// // require('bcdice/lib/bcdice/game_system');

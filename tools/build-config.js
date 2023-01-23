@@ -38,7 +38,7 @@ module.exports = {
     // Removes whitespace, etc. depending on `NODE_ENV=...`.
     minify: true,
     // Bundles JavaScript to (see `entryPoints`).
-    outfile: "dist/bundle.js",
+    outfile: "dist/bcdice.js",
     // Others
     platform: "browser",
     tsconfig: "./tsconfig.json",

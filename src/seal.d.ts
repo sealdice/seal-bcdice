@@ -217,4 +217,10 @@ declare namespace seal {
   export function getCtxProxyFirst(ctx: MsgContext, msg: Message): MsgContext;
   /** 回复发送者(发送者私聊即私聊回复，群内即群内回复) */
   export function replyToSender(ctx: MsgContext, msg: Message, text: string): void;
+  /** 回复发送者(私聊回复，典型应用场景如暗骰) */
+  export function replyPerson(ctx: MsgContext, msg: Message, text: string): void;
+  /** 回复发送者(群内回复，私聊时无效，典型应用场景暗骰) */
+  export function replyGroup(ctx: MsgContext, msg: Message, text: string): void;
+  /** 格式化文本 */
+  export function format(ctx: MsgContext, text: string): string;
 }
